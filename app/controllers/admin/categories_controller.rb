@@ -4,10 +4,10 @@ class Admin::CategoriesController < Admin::BaseController
   def index; redirect_to :action => 'new' ; end
   def edit; new_or_edit;  end
 
-  def new 
+  def new
     respond_to do |format|
       format.html { new_or_edit }
-      format.js { 
+      format.js {
         @category = Category.new
       }
     end
@@ -25,12 +25,15 @@ class Admin::CategoriesController < Admin::BaseController
 
   def new_or_edit
     @categories = Category.find(:all)
-    @category = Category.find(params[:id])
+
+    # return @category = Category.new unless params[:id]
+    params[:id]? @category = Category.find(params[:id]) : @category = Category.new
+
     @category.attributes = params[:category]
     if request.post?
       respond_to do |format|
         format.html { save_category }
-        format.js do 
+        format.js do
           @category.save
           @article = Article.new
           @article.categories << @category
@@ -39,7 +42,7 @@ class Admin::CategoriesController < Admin::BaseController
       end
       return
     end
-    render 'new'
+    render 'new' if params[:id]
   end
 
   def save_category
